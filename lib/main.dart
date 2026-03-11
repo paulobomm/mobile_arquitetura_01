@@ -2,14 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:product_app/data/datasources/product_remote_datasource.dart';
+import 'package:product_app/data/datasources/product_local_datasource.dart';
 import 'package:product_app/data/repositories/product_repository_impl.dart';
 import 'package:product_app/presentation/product_viewmodel.dart';
 import 'package:product_app/presentation/pages/product_page.dart';
 
 void main() {
   final client = HttpClient();
-  final dataSource = ProductRemoteDataSource(client);
-  final repository = ProductRepositoryImpl(dataSource);
+  final remoteDataSource = ProductRemoteDataSource(client);
+  final localDataSource = ProductLocalDataSource();
+  final repository = ProductRepositoryImpl(remoteDataSource, localDataSource);
   final viewModel = ProductViewModel(repository);
 
   runApp(MyApp(viewModel: viewModel));

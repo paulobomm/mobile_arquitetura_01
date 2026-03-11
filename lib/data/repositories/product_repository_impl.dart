@@ -1,21 +1,51 @@
 import 'package:product_app/data/datasources/product_remote_datasource.dart';
+import 'package:product_app/data/datasources/product_local_datasource.dart';
 import 'package:product_app/domain/entities/products.dart';
 import 'package:product_app/domain/repositories/product_repository.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
-  final ProductRemoteDataSource dataSource;
+  final ProductRemoteDataSource remoteDataSource;
+  final ProductLocalDataSource localDataSource;
 
-  ProductRepositoryImpl(this.dataSource);
+  ProductRepositoryImpl(this.remoteDataSource, this.localDataSource);
 
   @override
   Future<List<Product>> getProducts() async {
-    final models = await dataSource.getProducts();
+    try {
+      final models = await remoteDataSource.getProducts();
+      // Cache the fetched products
+      await localDataSource.saveProducts(models);
 
-    return models
-        .map(
-          (m) =>
-              Product(id: m.id, title: m.title, price: m.price, image: m.image),
-        )
-        .toList();
+      return models
+          .map(
+            (m) => Product(
+              id: m.id,
+              title: m.title,
+              price: m.price,
+              image: m.image,
+            ),
+          )
+          .toList();
+    } catch (e) {
+      // If remote fails, try to load from local cache
+      try {
+        final localModels = await localDataSource.getCachedProducts();
+        return localModels
+            .map(
+              (m) => Product(
+                id: m.id,
+                title: m.title,
+                price: m.price,
+                image: m.image,
+              ),
+            )
+            .toList();
+      } catch (cacheError) {
+        // If both remote and local fail, throw exception
+        throw Exception(
+          'Failed to load products: Network error and no local cache available',
+        );
+      }
+    }
   }
 }
