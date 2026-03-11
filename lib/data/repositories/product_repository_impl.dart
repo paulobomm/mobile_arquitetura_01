@@ -13,7 +13,6 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<List<Product>> getProducts() async {
     try {
       final models = await remoteDataSource.getProducts();
-      // Cache the fetched products
       await localDataSource.saveProducts(models);
 
       return models
@@ -27,7 +26,6 @@ class ProductRepositoryImpl implements ProductRepository {
           )
           .toList();
     } catch (e) {
-      // If remote fails, try to load from local cache
       try {
         final localModels = await localDataSource.getCachedProducts();
         return localModels
@@ -41,7 +39,6 @@ class ProductRepositoryImpl implements ProductRepository {
             )
             .toList();
       } catch (cacheError) {
-        // If both remote and local fail, throw exception
         throw Exception(
           'Failed to load products: Network error and no local cache available',
         );
