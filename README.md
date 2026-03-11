@@ -1,5 +1,5 @@
 # mobile_arquitetura_01
-Materia de Desenvolvimento de Dispositivos Móveis II - Exercicio 02
+Materia de Desenvolvimento de Dispositivos Móveis II - Exercicio 02git s
 
 ## Atividade 2 - Questionário de Reflexão
 
