@@ -1,28 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:product_app/main.dart';
-import 'package:product_app/domain/entities/products.dart';
-import 'package:product_app/domain/repositories/product_repository.dart';
-import 'package:product_app/presentation/product_viewmodel.dart';
-
-class _FakeRepo implements ProductRepository {
-  @override
-  Future<List<Product>> getProducts() async => [];
-}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    final viewModel = ProductViewModel(_FakeRepo());
-    await tester.pumpWidget(MyApp(viewModel: viewModel));
+  testWidgets('Product app loads and displays products', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MyApp());
+    await tester.pumpAndSettle();
 
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Produtos'), findsOneWidget);
+    expect(find.text('Notebook'), findsOneWidget);
+    expect(find.text('Mouse'), findsOneWidget);
+  });
 
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('Favorite button toggles favorite status', (
+    WidgetTester tester,
+  ) async {
+    final container = ProviderContainer();
 
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(container: container, child: const MyApp()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.star_border), findsWidgets);
+
+    await tester.tap(find.byIcon(Icons.star_border).first);
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.star), findsOneWidget);
   });
 }
