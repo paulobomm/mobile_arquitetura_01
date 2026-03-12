@@ -17,7 +17,6 @@ class ProductPage extends ConsumerWidget {
         title: const Text("Produtos"),
         elevation: 2,
         actions: [
-          // Contador de favoritos
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -46,7 +45,6 @@ class ProductPage extends ConsumerWidget {
               ),
             ),
           ),
-          // Botão de filtro
           IconButton(
             icon: Icon(
               showOnlyFavorites ? Icons.favorite : Icons.favorite_border,
@@ -131,7 +129,6 @@ class ProductTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      // Destaque visual para favoritos
       color: product.favorite ? Colors.amber.withOpacity(0.15) : Colors.white,
       elevation: product.favorite ? 4 : 1,
       child: ListTile(
@@ -169,7 +166,6 @@ class ProductTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  // Destaque no texto para favoritos
                   color: product.favorite ? Colors.deepPurple : null,
                 ),
               ),

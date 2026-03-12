@@ -6,7 +6,6 @@ import 'package:product_app/data/datasources/product_remote_datasource.dart';
 import 'package:product_app/data/datasources/product_local_datasource.dart';
 import 'dart:io';
 
-// Provider para o repositório de produtos
 final productRepositoryProvider = Provider<ProductRepository>((ref) {
   final client = HttpClient();
   final remoteDataSource = ProductRemoteDataSource(client);
@@ -14,14 +13,12 @@ final productRepositoryProvider = Provider<ProductRepository>((ref) {
   return ProductRepositoryImpl(remoteDataSource, localDataSource);
 });
 
-// Provider para a lista de produtos com gerenciamento de estado
 final productsProvider =
     StateNotifierProvider<ProductsNotifier, AsyncValue<List<Product>>>((ref) {
       final repository = ref.watch(productRepositoryProvider);
       return ProductsNotifier(repository);
     });
 
-// Provider para contar produtos favoritos (opcional - para desafio)
 final favoriteCountProvider = Provider<int>((ref) {
   final productsAsync = ref.watch(productsProvider);
   return productsAsync.when(
@@ -31,7 +28,6 @@ final favoriteCountProvider = Provider<int>((ref) {
   );
 });
 
-// Provider para obter apenas produtos favoritos (opcional - para desafio)
 final favoriteProductsProvider = Provider<List<Product>>((ref) {
   final productsAsync = ref.watch(productsProvider);
   return productsAsync.when(
@@ -41,14 +37,12 @@ final favoriteProductsProvider = Provider<List<Product>>((ref) {
   );
 });
 
-// Provider para gerenciar o estado do filtro (desafio opcional)
 final filterFavoritesProvider = StateNotifierProvider<FilterNotifier, bool>((
   ref,
 ) {
   return FilterNotifier();
 });
 
-// Provider para obter produtos filtrados (desafio opcional)
 final filteredProductsProvider = Provider<AsyncValue<List<Product>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
   final showOnlyFavorites = ref.watch(filterFavoritesProvider);
@@ -94,7 +88,6 @@ class ProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
     }
   }
 
-  // Alterna o status de favorito de um produto
   Future<void> toggleFavorite(int productId) async {
     final currentState = state;
 
@@ -106,23 +99,18 @@ class ProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
     if (productIndex == -1) return;
 
     try {
-      // Cria uma nova lista com o produto atualizado
       final updatedProducts = [...products];
       updatedProducts[productIndex] = updatedProducts[productIndex].copyWith(
         favorite: !updatedProducts[productIndex].favorite,
       );
 
-      // Atualiza o estado
       state = AsyncValue.data(updatedProducts);
 
-      // Aqui você pode adicionar persistência (salvar localmente se necessário)
-      // await repository.saveFavorite(productId, updatedProducts[productIndex].favorite);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
   }
 
-  // Marca um produto como favorito
   Future<void> markAsFavorite(int productId) async {
     final currentState = state;
 
@@ -144,7 +132,6 @@ class ProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
     }
   }
 
-  // Remove um produto dos favoritos
   Future<void> removeFromFavorites(int productId) async {
     final currentState = state;
 
