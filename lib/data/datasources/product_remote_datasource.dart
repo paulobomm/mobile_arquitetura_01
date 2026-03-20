@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show HttpClient;
 
-import 'package:product_app/data/models/product model.dart';
+import 'package:product_app/data/models/product_model.dart';
 
 class ProductRemoteDataSource {
   final HttpClient client;

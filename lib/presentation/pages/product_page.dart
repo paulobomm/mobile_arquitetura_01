@@ -26,7 +26,7 @@ class ProductPage extends ConsumerWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.3),
+                  color: Colors.amber.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -76,6 +76,13 @@ class ProductPage extends ConsumerWidget {
               final product = products[index];
               return ProductTile(
                 product: product,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/details',
+                    arguments: product,
+                  );
+                },
                 onFavoriteTap: () {
                   ref
                       .read(productsProvider.notifier)
@@ -118,30 +125,32 @@ class ProductPage extends ConsumerWidget {
 class ProductTile extends StatelessWidget {
   final Product product;
   final VoidCallback onFavoriteTap;
+  final VoidCallback onTap;
 
   const ProductTile({
     super.key,
     required this.product,
     required this.onFavoriteTap,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: product.favorite ? Colors.amber.withOpacity(0.15) : Colors.white,
+      color: product.favorite ? Colors.amber.withValues(alpha: 0.15) : null,
       elevation: product.favorite ? 4 : 1,
       child: ListTile(
+        onTap: onTap,
         leading: Container(
           width: 60,
           height: 60,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            // Borda destacada para favoritos
             border: product.favorite
                 ? Border.all(color: Colors.amber, width: 2)
                 : null,
-            color: Colors.grey[200],
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
@@ -179,7 +188,7 @@ class ProductTile extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.7),
+                    color: Colors.amber.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Text(

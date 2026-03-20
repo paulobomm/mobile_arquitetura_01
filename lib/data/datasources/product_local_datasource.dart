@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:product_app/data/models/product model.dart';
+import 'package:product_app/data/models/product_model.dart';
 
 class ProductLocalDataSource {
   static const String _cacheKey = 'cached_products';

@@ -1,6 +1,24 @@
 # mobile_arquitetura_01
 Materia de Desenvolvimento de Dispositivos Móveis II - Exercicio 02git s
 
+## Como Rodar a Aplicação
+
+Siga os passos abaixo para preparar e executar o aplicativo localmente:
+
+1. **Resolver as dependências do projeto:**
+   Abra o terminal na pasta do projeto e execute:
+   ```bash
+   flutter pub get
+   ```
+
+2. **Rodar a aplicação:**
+   Com um emulador aberto ou dispositivo físico conectado (ou mesmo na Web/Desktop), execute:
+   ```bash
+   flutter run
+   ```
+
+---
+
 ## Atividade 2 - Questionário de Reflexão
 
 **1. Em qual camada foi implementado o mecanismo de cache? Explique por que essa decisão é adequada dentro da arquitetura proposta.**
@@ -40,3 +58,33 @@ R: A estratégia adotada nesta implementação (`mobile_arquitetura_01`) fez uso
 
 **8. Durante a implementação, quais foram as principais dificuldades encontradas?**
 R: A transição de responsabilidades estritas em arquitetura de interface e separar puramente injeção de estado. Fica sendo o desafio inicial mais expressivo assimilar totalmente o fluxo de consumir o repositório como dados remotos de forma assíncrona até refletir essa "Future/Stream" como um fluxo visual tratável pela árvore da UI de maneira performática usando referências globais do Riverpod, sem confundir o responsabilidade sobre quem dita as instâncias lógicas se é a controladora ViewModel ou componente reativo StateNotifier.
+
+## Atividade 4 - Múltiplas Telas e Navegação
+
+**1. Qual era a estrutura do seu projeto antes da inclusão das novas telas?**
+R: O projeto consistia originalmente de uma única tela central (`ProductPage`), que atuava tanto como a porta de entrada inicial do aplicativo quanto como a lista contínua de produtos consumidos da Fake API.
+
+**2. Como ficou o fluxo da aplicação após a implementação da navegação?**
+R: O fluxo tornou-se sequencial e organizado em 3 etapas: o usuário inicia na Tela Inicial (`HomePage`), pode navegar navegando para a Listagem de Produtos (`ProductPage`) e, ao tocar em um item específico, avança para a Tela de Detalhes do Produto (`ProductDetailsPage`).
+
+**3. Qual é o papel do Navigator.push() no seu projeto?**
+R: O `Navigator.push()` (e o `pushNamed()`) é o mecanismo responsável por empilhar (adicionar) uma nova rota/tela sobre a atual na pilha de navegação do Flutter, permitindo a transição e a sobreposição visual da nova página. Em nosso projeto, é usado para ir da Home para os Produtos, e dos Produtos para os Detalhes.
+
+**4. Qual é o papel do Navigator.pop() no seu projeto?**
+R: Sua função é desempilhar a tela mais recente da pilha de navegação (como fechar a tela atual e "revelar" a que estava por baixo). Pode ser acionado automaticamente pela seta de voltar padrão na `AppBar` ou explicitamente via botões para retornar à listagem ou diretamente à tela `HomePage` (via `popUntil()`).
+
+**5. Como os dados do produto selecionado foram enviados para a tela de detalhes?**
+R: Eles foram repassados como `arguments` no momento da navegação através do mecanismo de rotas. No `onTap` de um produto, despachamos o objeto contendo as propriedades específicas; por trás dos panos, o `onGenerateRoute` captura esse objeto tipado e constrói a tela de detalhes injetando-o diretamente pelo seu construtor.
+
+**6. Por que a tela de detalhes depende das informações da tela anterior?**
+R: Porque ela é uma tela "modelo/genérica". Ela não faz uma nova requisição à API para buscar um produto; ela já reaproveita as instâncias em carregadas em memória pela listagem anterior (passada por argumento). Sem essas informações injetadas, ela não teria contexto dos dados (título, preço, descrição, imagem) para desenhar na interface.
+
+**7. Quais foram as principais mudanças feitas no projeto original?**
+R: 
+- Criação e estruturação da `HomePage` e da `ProductDetailsPage`. 
+- Modificação direta do `main.dart` para gerenciar a transição inteligente via rotas nomeadas (`routes` e `onGenerateRoute`).
+- Atualização do domínio `Product` e `ProductModel` para buscar `description`, `category` e as métricas de `rating` vindos da Mock API providenciando mais dados para a tela de detalhes.
+- Inclusão do Riverpod Provider `themeProvider` para permitir o controle do Dark Mode (tema) global através da barra de ações.
+
+**8. Quais dificuldades você encontrou durante a adaptação do projeto para múltiplas telas?**
+R: A dificuldade principal na arquitetura de repasse de argumentos é organizar e prever qual o formato estrutural em que as informações devem transitar pelo `Navigator` (garantindo que o objeto não chegue nulo) e como padronizar o mapeamento JSON dos novos campos estendidos da Fake API (`rating` subnivelado e descrição) minimizando quebras silenciosas durante as extrações lógicas e durante a forte tipagem da rota nomeada (`settings.arguments as Product`).

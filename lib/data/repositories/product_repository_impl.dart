@@ -22,6 +22,12 @@ class ProductRepositoryImpl implements ProductRepository {
               title: m.title,
               price: m.price,
               image: m.image,
+              description: m.description,
+              category: m.category,
+              rating: ProductRating(
+                rate: (m.rating['rate'] as num?)?.toDouble() ?? 0.0,
+                count: (m.rating['count'] as num?)?.toInt() ?? 0,
+              ),
             ),
           )
           .toList();
@@ -35,6 +41,12 @@ class ProductRepositoryImpl implements ProductRepository {
                 title: m.title,
                 price: m.price,
                 image: m.image,
+                description: m.description,
+                category: m.category,
+                rating: ProductRating(
+                  rate: (m.rating['rate'] as num?)?.toDouble() ?? 0.0,
+                  count: (m.rating['count'] as num?)?.toInt() ?? 0,
+                ),
               ),
             )
             .toList();
