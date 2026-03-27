@@ -12,9 +12,15 @@ class ProductPage extends ConsumerWidget {
     final favoriteCount = ref.watch(favoriteCountProvider);
     final showOnlyFavorites = ref.watch(filterFavoritesProvider);
 
+    final productCount = filteredProductsAsync.when(
+      data: (products) => products.length,
+      loading: () => 0,
+      error: (_, __) => 0,
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Produtos"),
+        title: Text("Produtos ($productCount)"),
         elevation: 2,
         actions: [
           Center(

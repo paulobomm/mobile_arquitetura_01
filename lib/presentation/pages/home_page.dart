@@ -8,18 +8,23 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
-    final isDark = themeMode == ThemeMode.dark || (themeMode == ThemeMode.system && MediaQuery.of(context).platformBrightness == Brightness.dark);
+    final isDark =
+        themeMode == ThemeMode.dark ||
+        (themeMode == ThemeMode.system &&
+            MediaQuery.of(context).platformBrightness == Brightness.dark);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tela Inicial'),
+        title: const Text('Home Page'),
         centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
             tooltip: 'Alternar Tema',
             onPressed: () {
-              ref.read(themeModeProvider.notifier).state = isDark ? ThemeMode.light : ThemeMode.dark;
+              ref.read(themeModeProvider.notifier).state = isDark
+                  ? ThemeMode.light
+                  : ThemeMode.dark;
             },
           ),
         ],
@@ -37,27 +42,20 @@ class HomePage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.shopping_bag,
-              size: 100,
-              color: Colors.deepPurple,
-            ),
+            const Icon(Icons.shopping_bag, size: 100, color: Colors.deepPurple),
             const SizedBox(height: 24),
             const Text(
               'Bem-vindo à Bomm Store!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.yellow,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 16),
             const Text(
               'Explore nossos produtos incríveis.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.yellow,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.black),
             ),
             const SizedBox(height: 48),
             ElevatedButton(
@@ -65,10 +63,13 @@ class HomePage extends ConsumerWidget {
                 Navigator.pushNamed(context, '/products');
               },
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
                 textStyle: const TextStyle(fontSize: 18),
                 backgroundColor: Colors.black,
-                foregroundColor: Colors.yellow,
+                foregroundColor: Colors.white,
               ),
               child: const Text('Ver Produtos'),
             ),
