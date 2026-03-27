@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:product_app/presentation/pages/home_page.dart';
 import 'package:product_app/presentation/pages/product_page.dart';
 import 'package:product_app/presentation/pages/product_details_page.dart';
+import 'package:product_app/presentation/pages/product_form_page.dart';
 import 'package:product_app/domain/entities/products.dart';
 import 'package:product_app/presentation/providers/theme_provider.dart';
 
@@ -35,6 +36,10 @@ class MyApp extends ConsumerWidget {
       routes: {
         '/home': (context) => const HomePage(),
         '/products': (context) => const ProductPage(),
+        '/form': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Product?;
+          return ProductFormPage(product: args);
+        },
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/details') {

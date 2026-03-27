@@ -6,7 +6,7 @@ class ProductRating {
 }
 
 class Product {
-  final int id;
+  final int? id;
   final String title;
   final double price;
   final String image;
@@ -16,7 +16,7 @@ class Product {
   bool favorite;
 
   Product({
-    required this.id,
+    this.id,
     required this.title,
     required this.price,
     required this.image,

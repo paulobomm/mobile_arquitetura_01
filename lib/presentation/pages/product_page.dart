@@ -86,7 +86,36 @@ class ProductPage extends ConsumerWidget {
                 onFavoriteTap: () {
                   ref
                       .read(productsProvider.notifier)
-                      .toggleFavorite(product.id);
+                      .toggleFavorite(product.id ?? 0);
+                },
+                onEdit: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/form',
+                    arguments: product,
+                  );
+                },
+                onDelete: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Excluir Produto'),
+                      content: Text('Deseja realmente excluir "${product.title}"?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Cancelar'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            ref.read(productsProvider.notifier).removeProduct(product.id ?? 0);
+                            Navigator.pop(ctx);
+                          },
+                          child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
                 },
               );
             },
@@ -118,6 +147,14 @@ class ProductPage extends ConsumerWidget {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/form');
+        },
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
@@ -126,12 +163,16 @@ class ProductTile extends StatelessWidget {
   final Product product;
   final VoidCallback onFavoriteTap;
   final VoidCallback onTap;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   const ProductTile({
     super.key,
     required this.product,
     required this.onFavoriteTap,
     required this.onTap,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
@@ -211,13 +252,26 @@ class ProductTile extends StatelessWidget {
             fontSize: 14,
           ),
         ),
-        trailing: IconButton(
-          icon: Icon(
-            product.favorite ? Icons.star : Icons.star_border,
-            color: product.favorite ? Colors.amber : Colors.grey,
-            size: 28,
-          ),
-          onPressed: onFavoriteTap,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.blueAccent),
+              onPressed: onEdit,
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.redAccent),
+              onPressed: onDelete,
+            ),
+            IconButton(
+              icon: Icon(
+                product.favorite ? Icons.star : Icons.star_border,
+                color: product.favorite ? Colors.amber : Colors.grey,
+                size: 28,
+              ),
+              onPressed: onFavoriteTap,
+            ),
+          ],
         ),
       ),
     );

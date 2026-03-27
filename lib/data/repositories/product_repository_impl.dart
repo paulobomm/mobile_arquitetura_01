@@ -1,5 +1,6 @@
 import 'package:product_app/data/datasources/product_remote_datasource.dart';
 import 'package:product_app/data/datasources/product_local_datasource.dart';
+import 'package:product_app/data/models/product_model.dart';
 import 'package:product_app/domain/entities/products.dart';
 import 'package:product_app/domain/repositories/product_repository.dart';
 
@@ -57,4 +58,73 @@ class ProductRepositoryImpl implements ProductRepository {
       }
     }
   }
+
+  @override
+  Future<Product> createProduct(Product product) async {
+    final modelInput = ProductModel(
+      id: 0, 
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      description: product.description,
+      category: product.category,
+      rating: {
+        'rate': product.rating.rate,
+        'count': product.rating.count,
+      },
+    );
+    
+    
+    final savedModel = await localDataSource.addProduct(modelInput);
+    
+    return Product(
+      id: savedModel.id,
+      title: savedModel.title,
+      price: savedModel.price,
+      image: savedModel.image,
+      description: savedModel.description,
+      category: savedModel.category,
+      rating: ProductRating(
+        rate: (savedModel.rating['rate'] as num?)?.toDouble() ?? 0.0,
+        count: (savedModel.rating['count'] as num?)?.toInt() ?? 0,
+      ),
+    );
+  }
+
+  @override
+  Future<Product> updateProduct(Product product) async {
+    final modelInput = ProductModel(
+      id: product.id ?? 0,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      description: product.description,
+      category: product.category,
+      rating: {
+        'rate': product.rating.rate,
+        'count': product.rating.count,
+      },
+    );
+    
+    final updatedModel = await localDataSource.updateProduct(modelInput);
+    
+    return Product(
+      id: updatedModel.id,
+      title: updatedModel.title,
+      price: updatedModel.price,
+      image: updatedModel.image,
+      description: updatedModel.description,
+      category: updatedModel.category,
+      rating: ProductRating(
+        rate: (updatedModel.rating['rate'] as num?)?.toDouble() ?? 0.0,
+        count: (updatedModel.rating['count'] as num?)?.toInt() ?? 0,
+      ),
+    );
+  }
+
+  @override
+  Future<void> deleteProduct(int id) async {
+    await localDataSource.removeProduct(id);
+  }
 }
+

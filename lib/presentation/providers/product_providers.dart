@@ -152,4 +152,49 @@ class ProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
       state = AsyncValue.error(e, stackTrace);
     }
   }
+
+  Future<void> addProduct(Product product) async {
+    try {
+      final newProduct = await repository.createProduct(product);
+      if (state is AsyncData) {
+        final products = state.value!;
+        state = AsyncValue.data([newProduct, ...products]);
+      } else {
+        await loadProducts();
+      }
+    } catch (e, stackTrace) {
+      // Ignorar erros visuais pro app mockado por agora
+      print("Erro ao adicionar produto: $e");
+    }
+  }
+
+  Future<void> updateProduct(Product product) async {
+    try {
+      final updatedProduct = await repository.updateProduct(product);
+      if (state is AsyncData) {
+        final products = state.value!;
+        final index = products.indexWhere((p) => p.id == updatedProduct.id);
+        if (index != -1) {
+          final updatedList = [...products];
+          updatedList[index] = updatedProduct;
+          state = AsyncValue.data(updatedList);
+        }
+      }
+    } catch (e, stackTrace) {
+      print("Erro ao atualizar produto: $e");
+    }
+  }
+
+  Future<void> removeProduct(int productId) async {
+    try {
+      await repository.deleteProduct(productId);
+      if (state is AsyncData) {
+        final products = state.value!;
+        final updatedList = products.where((p) => p.id != productId).toList();
+        state = AsyncValue.data(updatedList);
+      }
+    } catch (e, stackTrace) {
+      print("Erro ao remover produto: $e");
+    }
+  }
 }

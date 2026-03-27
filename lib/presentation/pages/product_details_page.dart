@@ -83,7 +83,6 @@ class ProductDetailsPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // Título
                   Text(
                     product.title,
                     style: const TextStyle(
@@ -92,7 +91,6 @@ class ProductDetailsPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // Preço
                   Text(
                     'R\$ ${product.price.toStringAsFixed(2)}',
                     style: const TextStyle(
@@ -102,7 +100,6 @@ class ProductDetailsPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Descrição
                   const Text(
                     'Descrição',
                     style: TextStyle(
