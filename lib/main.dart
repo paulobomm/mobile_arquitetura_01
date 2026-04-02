@@ -6,6 +6,8 @@ import 'package:product_app/presentation/pages/product_details_page.dart';
 import 'package:product_app/presentation/pages/product_form_page.dart';
 import 'package:product_app/domain/entities/products.dart';
 import 'package:product_app/presentation/providers/theme_provider.dart';
+import 'package:product_app/presentation/pages/login_page.dart';
+import 'package:product_app/presentation/providers/auth_provider.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -17,6 +19,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final authState = ref.watch(authProvider);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -32,9 +35,10 @@ class MyApp extends ConsumerWidget {
         ),
       ),
       themeMode: themeMode, 
-      initialRoute: '/home',
+      home: authState.isAuthenticated ? const HomePage() : const LoginPage(),
       routes: {
         '/home': (context) => const HomePage(),
+        '/login': (context) => const LoginPage(),
         '/products': (context) => const ProductPage(),
         '/form': (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Product?;

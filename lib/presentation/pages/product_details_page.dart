@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:product_app/domain/entities/products.dart';
+import 'package:product_app/presentation/widgets/logout_button.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
@@ -12,6 +13,7 @@ class ProductDetailsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(product.title),
         actions: [
+          const LogoutButton(),
           IconButton(
             icon: const Icon(Icons.home),
             tooltip: 'Ir para Home',

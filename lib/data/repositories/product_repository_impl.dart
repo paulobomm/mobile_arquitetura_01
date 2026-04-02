@@ -52,6 +52,8 @@ class ProductRepositoryImpl implements ProductRepository {
             )
             .toList();
       } catch (cacheError) {
+        print("Original error when fetching products: $e");
+        print("Cache error: $cacheError");
         throw Exception(
           'Failed to load products: Network error and no local cache available',
         );

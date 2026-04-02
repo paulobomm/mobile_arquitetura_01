@@ -28,6 +28,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders += mapOf(
+            "auth0Domain" to "paulobomm.us.auth0.com",
+            "auth0Scheme" to "com.example.productapp"
+        )
     }
 
     buildTypes {

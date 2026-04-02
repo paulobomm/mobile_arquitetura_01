@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:product_app/presentation/providers/theme_provider.dart';
+import 'package:product_app/presentation/widgets/logout_button.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -18,6 +19,7 @@ class HomePage extends ConsumerWidget {
         title: const Text('Home Page'),
         centerTitle: true,
         actions: [
+          const LogoutButton(),
           IconButton(
             icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
             tooltip: 'Alternar Tema',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:product_app/domain/entities/products.dart';
 import 'package:product_app/presentation/providers/product_providers.dart';
+import 'package:product_app/presentation/widgets/logout_button.dart';
 
 class ProductPage extends ConsumerWidget {
   const ProductPage({super.key});
@@ -23,6 +24,7 @@ class ProductPage extends ConsumerWidget {
         title: Text("Produtos ($productCount)"),
         elevation: 2,
         actions: [
+          const LogoutButton(),
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),

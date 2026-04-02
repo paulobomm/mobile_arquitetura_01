@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:product_app/domain/entities/products.dart';
 import 'package:product_app/presentation/providers/product_providers.dart';
+import 'package:product_app/presentation/widgets/logout_button.dart';
 
 class ProductFormPage extends ConsumerStatefulWidget {
   final Product? product;
@@ -79,6 +80,9 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Editar Produto' : 'Novo Produto'),
+        actions: const [
+          LogoutButton(),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

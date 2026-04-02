@@ -162,7 +162,7 @@ class ProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
       } else {
         await loadProducts();
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Ignorar erros visuais pro app mockado por agora
       print("Erro ao adicionar produto: $e");
     }
@@ -180,7 +180,7 @@ class ProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
           state = AsyncValue.data(updatedList);
         }
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       print("Erro ao atualizar produto: $e");
     }
   }
@@ -193,7 +193,7 @@ class ProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
         final updatedList = products.where((p) => p.id != productId).toList();
         state = AsyncValue.data(updatedList);
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       print("Erro ao remover produto: $e");
     }
   }
