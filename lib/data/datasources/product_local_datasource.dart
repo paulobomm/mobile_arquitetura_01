@@ -31,7 +31,7 @@ class ProductLocalDataSource {
       id: newId,
       title: product.title,
       price: product.price,
-      image: product.image,
+      thumbnail: product.thumbnail,
       description: product.description,
       category: product.category,
       rating: product.rating,

@@ -2,16 +2,16 @@ class ProductModel {
   final int id;
   final String title;
   final double price;
-  final String image;
+  final String thumbnail;
   final String description;
   final String category;
-  final Map<String, dynamic> rating;
+  final double rating;
 
   ProductModel({
     required this.id,
     required this.title,
     required this.price,
-    required this.image,
+    required this.thumbnail,
     required this.description,
     required this.category,
     required this.rating,
@@ -21,15 +21,15 @@ class ProductModel {
     return ProductModel(
       id: json["id"] is int ? json["id"] : int.tryParse(json["id"].toString()) ?? 0,
       title: json["title"]?.toString() ?? '',
-      price: json["price"] is num 
-          ? (json["price"] as num).toDouble() 
+      price: json["price"] is num
+          ? (json["price"] as num).toDouble()
           : double.tryParse(json["price"].toString()) ?? 0.0,
-      image: json["image"]?.toString() ?? '',
+      thumbnail: json["thumbnail"]?.toString() ?? '',
       description: json["description"]?.toString() ?? '',
       category: json["category"]?.toString() ?? '',
-      rating: (json["rating"] is Map) 
-          ? Map<String, dynamic>.from(json["rating"]) 
-          : {'rate': 0.0, 'count': 0},
+      rating: json["rating"] is num
+          ? (json["rating"] as num).toDouble()
+          : double.tryParse(json["rating"].toString()) ?? 0.0,
     );
   }
 
@@ -38,7 +38,7 @@ class ProductModel {
       "id": id,
       "title": title,
       "price": price,
-      "image": image,
+      "thumbnail": thumbnail,
       "description": description,
       "category": category,
       "rating": rating,

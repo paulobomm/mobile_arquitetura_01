@@ -4,6 +4,26 @@ import 'package:product_app/data/models/product_model.dart';
 import 'package:product_app/domain/entities/products.dart';
 import 'package:product_app/domain/repositories/product_repository.dart';
 
+Product _fromModel(ProductModel m) => Product(
+  id: m.id,
+  title: m.title,
+  price: m.price,
+  image: m.thumbnail,
+  description: m.description,
+  category: m.category,
+  rating: ProductRating(rate: m.rating, count: 0),
+);
+
+ProductModel _toModel(Product p) => ProductModel(
+  id: p.id ?? 0,
+  title: p.title,
+  price: p.price,
+  thumbnail: p.image,
+  description: p.description,
+  category: p.category,
+  rating: p.rating.rate,
+);
+
 class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource remoteDataSource;
   final ProductLocalDataSource localDataSource;
@@ -15,47 +35,14 @@ class ProductRepositoryImpl implements ProductRepository {
     try {
       final models = await remoteDataSource.getProducts();
       await localDataSource.saveProducts(models);
-
-      return models
-          .map(
-            (m) => Product(
-              id: m.id,
-              title: m.title,
-              price: m.price,
-              image: m.image,
-              description: m.description,
-              category: m.category,
-              rating: ProductRating(
-                rate: (m.rating['rate'] as num?)?.toDouble() ?? 0.0,
-                count: (m.rating['count'] as num?)?.toInt() ?? 0,
-              ),
-            ),
-          )
-          .toList();
+      return models.map(_fromModel).toList();
     } catch (e) {
       try {
         final localModels = await localDataSource.getCachedProducts();
-        return localModels
-            .map(
-              (m) => Product(
-                id: m.id,
-                title: m.title,
-                price: m.price,
-                image: m.image,
-                description: m.description,
-                category: m.category,
-                rating: ProductRating(
-                  rate: (m.rating['rate'] as num?)?.toDouble() ?? 0.0,
-                  count: (m.rating['count'] as num?)?.toInt() ?? 0,
-                ),
-              ),
-            )
-            .toList();
+        return localModels.map(_fromModel).toList();
       } catch (cacheError) {
-        print("Original error when fetching products: $e");
-        print("Cache error: $cacheError");
         throw Exception(
-          'Failed to load products: Network error and no local cache available',
+          'Falha ao carregar produtos: sem rede e sem cache disponível',
         );
       }
     }
@@ -63,65 +50,14 @@ class ProductRepositoryImpl implements ProductRepository {
 
   @override
   Future<Product> createProduct(Product product) async {
-    final modelInput = ProductModel(
-      id: 0, 
-      title: product.title,
-      price: product.price,
-      image: product.image,
-      description: product.description,
-      category: product.category,
-      rating: {
-        'rate': product.rating.rate,
-        'count': product.rating.count,
-      },
-    );
-    
-    
-    final savedModel = await localDataSource.addProduct(modelInput);
-    
-    return Product(
-      id: savedModel.id,
-      title: savedModel.title,
-      price: savedModel.price,
-      image: savedModel.image,
-      description: savedModel.description,
-      category: savedModel.category,
-      rating: ProductRating(
-        rate: (savedModel.rating['rate'] as num?)?.toDouble() ?? 0.0,
-        count: (savedModel.rating['count'] as num?)?.toInt() ?? 0,
-      ),
-    );
+    final saved = await localDataSource.addProduct(_toModel(product));
+    return _fromModel(saved);
   }
 
   @override
   Future<Product> updateProduct(Product product) async {
-    final modelInput = ProductModel(
-      id: product.id ?? 0,
-      title: product.title,
-      price: product.price,
-      image: product.image,
-      description: product.description,
-      category: product.category,
-      rating: {
-        'rate': product.rating.rate,
-        'count': product.rating.count,
-      },
-    );
-    
-    final updatedModel = await localDataSource.updateProduct(modelInput);
-    
-    return Product(
-      id: updatedModel.id,
-      title: updatedModel.title,
-      price: updatedModel.price,
-      image: updatedModel.image,
-      description: updatedModel.description,
-      category: updatedModel.category,
-      rating: ProductRating(
-        rate: (updatedModel.rating['rate'] as num?)?.toDouble() ?? 0.0,
-        count: (updatedModel.rating['count'] as num?)?.toInt() ?? 0,
-      ),
-    );
+    final updated = await localDataSource.updateProduct(_toModel(product));
+    return _fromModel(updated);
   }
 
   @override
@@ -129,4 +65,3 @@ class ProductRepositoryImpl implements ProductRepository {
     await localDataSource.removeProduct(id);
   }
 }
-

@@ -10,14 +10,14 @@ class ProductRemoteDataSource {
 
   Future<List<ProductModel>> getProducts() async {
     final request = await client.getUrl(
-      Uri.parse("https://fakestoreapi.com/products"),
+      Uri.parse("https://dummyjson.com/products"),
     );
     final response = await request.close();
     final data = await response.transform(utf8.decoder).join();
-    final jsonData = jsonDecode(data);
+    final jsonData = jsonDecode(data) as Map<String, dynamic>;
 
-    return (jsonData as List)
-        .map((json) => ProductModel.fromJson(json))
+    return (jsonData['products'] as List)
+        .map((json) => ProductModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 }

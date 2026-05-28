@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:product_app/domain/entities/products.dart';
+import 'package:product_app/presentation/providers/auth_provider.dart';
 import 'package:product_app/presentation/providers/product_providers.dart';
 import 'package:product_app/presentation/widgets/logout_button.dart';
 
@@ -12,6 +13,7 @@ class ProductPage extends ConsumerWidget {
     final filteredProductsAsync = ref.watch(filteredProductsProvider);
     final favoriteCount = ref.watch(favoriteCountProvider);
     final showOnlyFavorites = ref.watch(filterFavoritesProvider);
+    final authUser = ref.watch(authProvider).user;
 
     final productCount = filteredProductsAsync.when(
       data: (products) => products.length,
@@ -21,9 +23,32 @@ class ProductPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Produtos ($productCount)"),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Produtos ($productCount)"),
+            if (authUser != null)
+              Text(
+                authUser.firstName,
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              ),
+          ],
+        ),
         elevation: 2,
         actions: [
+          if (authUser?.image.isNotEmpty == true)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: CircleAvatar(
+                radius: 16,
+                backgroundImage: NetworkImage(authUser!.image),
+              ),
+            ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Atualizar produtos',
+            onPressed: () => ref.read(productsProvider.notifier).loadProducts(),
+          ),
           const LogoutButton(),
           Center(
             child: Padding(

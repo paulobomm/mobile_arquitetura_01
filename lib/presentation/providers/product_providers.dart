@@ -163,7 +163,6 @@ class ProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
         await loadProducts();
       }
     } catch (e) {
-      // Ignorar erros visuais pro app mockado por agora
       print("Erro ao adicionar produto: $e");
     }
   }

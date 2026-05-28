@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:product_app/presentation/providers/theme_provider.dart';
+import 'package:product_app/presentation/providers/auth_provider.dart';
 import 'package:product_app/presentation/widgets/logout_button.dart';
 
 class HomePage extends ConsumerWidget {
@@ -9,24 +10,39 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final authState = ref.watch(authProvider);
     final isDark =
         themeMode == ThemeMode.dark ||
         (themeMode == ThemeMode.system &&
             MediaQuery.of(context).platformBrightness == Brightness.dark);
+
+    final userName = authState.user?.firstName ?? 'Usuário';
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
         centerTitle: true,
         actions: [
+          if (authState.user?.image.isNotEmpty == true)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: CircleAvatar(
+                radius: 18,
+                backgroundImage: NetworkImage(authState.user!.image),
+              ),
+            ),
+          IconButton(
+            icon: const Icon(Icons.person),
+            tooltip: 'Perfil',
+            onPressed: () => Navigator.pushNamed(context, '/profile'),
+          ),
           const LogoutButton(),
           IconButton(
             icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
             tooltip: 'Alternar Tema',
             onPressed: () {
-              ref.read(themeModeProvider.notifier).state = isDark
-                  ? ThemeMode.light
-                  : ThemeMode.dark;
+              ref.read(themeModeProvider.notifier).state =
+                  isDark ? ThemeMode.light : ThemeMode.dark;
             },
           ),
         ],
@@ -46,9 +62,9 @@ class HomePage extends ConsumerWidget {
           children: [
             const Icon(Icons.shopping_bag, size: 100, color: Colors.deepPurple),
             const SizedBox(height: 24),
-            const Text(
-              'Bem-vindo à Bomm Store!',
-              style: TextStyle(
+            Text(
+              'Bem-vindo, $userName!',
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,

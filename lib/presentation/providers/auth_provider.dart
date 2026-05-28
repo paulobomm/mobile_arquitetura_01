@@ -1,112 +1,75 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:auth0_flutter/auth0_flutter.dart';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:product_app/data/models/user_model.dart';
+import 'package:product_app/data/services/auth_service.dart';
 
 class AuthState {
   final bool isAuthenticated;
-  final UserProfile? user;
+  final UserModel? user;
   final bool isLoading;
+  final String? error;
 
-  AuthState({this.isAuthenticated = false, this.user, this.isLoading = false});
+  AuthState({
+    this.isAuthenticated = false,
+    this.user,
+    this.isLoading = false,
+    this.error,
+  });
 
   AuthState copyWith({
     bool? isAuthenticated,
-    UserProfile? user,
+    UserModel? user,
     bool? isLoading,
+    String? error,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       user: user ?? this.user,
       isLoading: isLoading ?? this.isLoading,
+      error: error,
     );
   }
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  Auth0? auth0;
+  final _authService = AuthService();
 
-  AuthNotifier() : super(AuthState()) {
-    if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
-      auth0 = Auth0(
-        'paulobomm.us.auth0.com',
-        'Cxm0lAYjjPSB7P28ZCI50QF3SaTTcOdU',
-      );
-      _checkIsLoggedIn();
-    } else {
-      state = state.copyWith(isAuthenticated: false, isLoading: false);
-    }
+  AuthNotifier() : super(AuthState(isLoading: true)) {
+    _checkSession();
   }
 
-  Future<void> _checkIsLoggedIn() async {
-    if (auth0 == null) return;
-    if (kIsWeb) {
-      state = state.copyWith(isAuthenticated: false, isLoading: false);
-      return;
-    }
-    state = state.copyWith(isLoading: true);
+  Future<void> _checkSession() async {
     try {
-      if (await auth0!.credentialsManager.hasValidCredentials()) {
-        final credentials = await auth0!.credentialsManager.credentials();
-        state = state.copyWith(
-          isAuthenticated: true,
-          user: credentials.user,
-          isLoading: false,
-        );
-      } else {
-        state = state.copyWith(isAuthenticated: false, isLoading: false);
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      if (token != null && token.isNotEmpty) {
+        final user = await _authService.getMe(token);
+        state = AuthState(isAuthenticated: true, user: user);
+        return;
       }
-    } catch (e) {
-      state = state.copyWith(isAuthenticated: false, isLoading: false);
-    }
+    } catch (_) {}
+    state = AuthState();
   }
 
-  Future<void> login() async {
-    if (auth0 == null) {
-      print("Login not supported on this platform - Mocking Login");
-      await Future.delayed(const Duration(milliseconds: 500));
-      state = state.copyWith(
-        isAuthenticated: true,
-        user: const UserProfile(sub: 'linux_mock_user', name: 'Linux Mock User', nickname: 'linux_mock'),
-        isLoading: false,
-      );
-      return;
-    }
-    state = state.copyWith(isLoading: true);
+  Future<void> login(String username, String password) async {
+    state = AuthState(isLoading: true);
     try {
-      final credentials = await auth0!.webAuthentication().login();
-      state = state.copyWith(
-        isAuthenticated: true,
-        user: credentials.user,
-        isLoading: false,
-      );
+      final user = await _authService.login(username, password);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('auth_token', user.token);
+      state = AuthState(isAuthenticated: true, user: user);
     } catch (e) {
-      print("Login Error: $e");
-      state = state.copyWith(isLoading: false);
-      // Aqui poderíamos emitir erro via outro provider ou callback
+      state = AuthState(error: e.toString().replaceFirst('Exception: ', ''));
     }
   }
 
   Future<void> logout() async {
-    if (auth0 == null) {
-      print("Logout not supported on this platform - Mocking Logout");
-      await Future.delayed(const Duration(milliseconds: 500));
-      state = AuthState();
-      return;
-    }
-    state = state.copyWith(isLoading: true);
-    try {
-      await auth0!.webAuthentication().logout();
-      if (!kIsWeb) {
-        await auth0!.credentialsManager.clearCredentials();
-      }
-      state = AuthState();
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    state = AuthState();
   }
 }
 
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier();
-});
+final authProvider = StateNotifierProvider<AuthNotifier, AuthState>(
+  (_) => AuthNotifier(),
+);

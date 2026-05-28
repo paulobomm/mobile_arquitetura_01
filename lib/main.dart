@@ -4,6 +4,7 @@ import 'package:product_app/presentation/pages/home_page.dart';
 import 'package:product_app/presentation/pages/product_page.dart';
 import 'package:product_app/presentation/pages/product_details_page.dart';
 import 'package:product_app/presentation/pages/product_form_page.dart';
+import 'package:product_app/presentation/pages/profile_page.dart';
 import 'package:product_app/domain/entities/products.dart';
 import 'package:product_app/presentation/providers/theme_provider.dart';
 import 'package:product_app/presentation/pages/login_page.dart';
@@ -21,6 +22,15 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final authState = ref.watch(authProvider);
 
+    Widget home;
+    if (authState.isLoading) {
+      home = const Scaffold(body: Center(child: CircularProgressIndicator()));
+    } else if (authState.isAuthenticated) {
+      home = const ProductPage();
+    } else {
+      home = const LoginPage();
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Product App',
@@ -34,12 +44,13 @@ class MyApp extends ConsumerWidget {
           brightness: Brightness.dark,
         ),
       ),
-      themeMode: themeMode, 
-      home: authState.isAuthenticated ? const HomePage() : const LoginPage(),
+      themeMode: themeMode,
+      home: home,
       routes: {
         '/home': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/products': (context) => const ProductPage(),
+        '/profile': (context) => const ProfilePage(),
         '/form': (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Product?;
           return ProductFormPage(product: args);
@@ -52,10 +63,8 @@ class MyApp extends ConsumerWidget {
             builder: (context) => ProductDetailsPage(product: product),
           );
         }
-        return null; 
+        return null;
       },
     );
   }
 }
-
-
