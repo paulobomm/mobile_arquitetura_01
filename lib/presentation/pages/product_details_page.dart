@@ -18,7 +18,7 @@ class ProductDetailsPage extends StatelessWidget {
             icon: const Icon(Icons.home),
             tooltip: 'Ir para Home',
             onPressed: () {
-              Navigator.popUntil(context, ModalRoute.withName('/home'));
+              Navigator.popUntil(context, (route) => route.isFirst);
             },
           ),
         ],
