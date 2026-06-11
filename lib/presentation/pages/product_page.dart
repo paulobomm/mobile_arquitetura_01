@@ -23,41 +23,44 @@ class ProductPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Produtos ($productCount)"),
-            if (authUser != null)
-              Text(
-                authUser.firstName,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-              ),
-          ],
-        ),
+        automaticallyImplyLeading: false,
+        leadingWidth: 200,
+        leading: authUser != null
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _UserAvatar(user: authUser),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        authUser.firstName,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : null,
+        title: Text("Produtos ($productCount)"),
+        centerTitle: true,
         elevation: 2,
         actions: [
-          if (authUser?.image.isNotEmpty == true)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: CircleAvatar(
-                radius: 16,
-                backgroundImage: NetworkImage(authUser!.image),
-              ),
-            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Atualizar produtos',
             onPressed: () => ref.read(productsProvider.notifier).loadProducts(),
           ),
-          const LogoutButton(),
           Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.amber.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(20),
@@ -65,7 +68,7 @@ class ProductPage extends ConsumerWidget {
                 child: Row(
                   children: [
                     const Icon(Icons.star, color: Colors.amber, size: 20),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 4),
                     Text(
                       '$favoriteCount',
                       style: const TextStyle(
@@ -90,6 +93,7 @@ class ProductPage extends ConsumerWidget {
               ref.read(filterFavoritesProvider.notifier).toggleFilter();
             },
           ),
+          const LogoutButton(),
         ],
       ),
       body: filteredProductsAsync.when(
@@ -307,6 +311,44 @@ class ProductTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _UserAvatar extends StatefulWidget {
+  final dynamic user;
+  const _UserAvatar({required this.user});
+
+  @override
+  State<_UserAvatar> createState() => _UserAvatarState();
+}
+
+class _UserAvatarState extends State<_UserAvatar> {
+  bool _imageError = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: 16,
+      backgroundColor: Colors.deepPurple,
+      backgroundImage: (!_imageError && widget.user.image.isNotEmpty)
+          ? NetworkImage(widget.user.image)
+          : null,
+      onBackgroundImageError: (!_imageError && widget.user.image.isNotEmpty)
+          ? (_, __) => setState(() => _imageError = true)
+          : null,
+      child: (_imageError || widget.user.image.isEmpty)
+          ? Text(
+              widget.user.firstName.isNotEmpty
+                  ? widget.user.firstName[0].toUpperCase()
+                  : '?',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          : null,
     );
   }
 }

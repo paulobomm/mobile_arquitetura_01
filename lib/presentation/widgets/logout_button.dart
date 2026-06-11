@@ -10,8 +10,11 @@ class LogoutButton extends ConsumerWidget {
     return IconButton(
       icon: const Icon(Icons.logout),
       tooltip: 'Sair',
-      onPressed: () {
-        ref.read(authProvider.notifier).logout();
+      onPressed: () async {
+        await ref.read(authProvider.notifier).logout();
+        if (context.mounted) {
+          Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+        }
       },
     );
   }
