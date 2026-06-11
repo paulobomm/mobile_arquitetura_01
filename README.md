@@ -1,5 +1,18 @@
 # mobile_arquitetura_01
-Materia de Desenvolvimento de Dispositivos Móveis II - Exercicio 02git s
+Materia de Desenvolvimento de Dispositivos Móveis II - Exercicio 02
+
+## Pré-requisitos
+
+- [Flutter](https://docs.flutter.dev/get-started/install) (stable, versão 3.44+)
+- Dart 3.9+
+
+> **Para rodar no Android:** é necessário Java 17. Versões mais recentes (como Java 25, padrão no Ubuntu 26.04) causam erro de build no Gradle.
+> ```bash
+> sudo apt install openjdk-17-jdk
+> flutter config --jdk-dir /usr/lib/jvm/java-17-openjdk-amd64
+> ```
+>
+> **Para rodar no Linux Desktop ou Chrome (Web):** nenhuma configuração adicional é necessária.
 
 ## Como Rodar a Aplicação
 
